@@ -1,0 +1,76 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+  ~ Copyright (c) 2021 The Android Open Source Project
+  ~
+  ~ Licensed under the Apache License, Version 2.0 (the "License");
+  ~ you may not use this file except in compliance with the License.
+  ~ You may obtain a copy of the License at
+  ~
+  ~      http://www.apache.org/licenses/LICENSE-2.0
+  ~
+  ~ Unless required by applicable law or agreed to in writing, software
+  ~ distributed under the License is distributed on an "AS IS" BASIS,
+  ~ WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+  ~ See the License for the specific language governing permissions and
+  ~ limitations under the License.
+  -->
+
+<!--
+SlidingPaneLayout会根据两个窗格的宽度来确定是否并排显示这些窗格。
+例如，如果测量后发现列表窗格的最小尺寸为300dp，而详细信息窗格需要400dp，
+那么只要可用宽度不小于700dp，SlidingPaneLayout就会自动并排显示两个窗格。
+
+如果子视图的总宽度超过了SlidingPaneLayout中的可用宽度，这些视图就会重叠。
+在这种情况下，子视图会展开，填满SlidingPaneLayout中的可用宽度。
+
+|宽度|断点|设备表示|
+|:-|:-|:-|
+|较小的宽度|小于600dp|99.96%的手机处于竖屏模式
+|中等宽度|600dp+|93.73%的平板电脑展开的内部显示屏采用portraitLarge模式时处于竖屏模式
+|较大的宽度|840dp+|97.22%的平板电脑展开的内部显示屏采用landscapeLarge模式时处于横屏模式
+
+
+此项目中希望再手机上显示单个窗格（体育项目列表），这适用于宽度小于600dp的设备。
+如需在平板电脑上显示两个窗格，总宽度应大于840dp。
+因此为第一个子视图（recycler视图）使用宽度550dp，为第二个子视图（FragmentContainerView）使用300dp。
+-->
+
+<androidx.slidingpanelayout.widget.SlidingPaneLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/sliding_pane_layout"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    tools:context=".SportsListFragment">
+
+    <androidx.recyclerview.widget.RecyclerView
+        android:id="@+id/recycler_view"
+        android:padding="8dp"
+        android:layout_width="550dp"
+        android:layout_height="match_parent"
+        android:clipToPadding="false"
+        app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager"
+        android:layout_gravity="start"/>
+
+    <!-- The second child becomes the right (content) pane. In this
+         example, android:layout_weight is used to expand this detail pane
+         to consume leftover available space when the
+         the entire window is wide enough to fit both the left and right pane.-->
+    <!--
+        该子集将显示为右侧的内容窗格
+
+        针对平板电脑修改界面尺寸，使第二个窗格占据整个剩余空间。
+        SlidingPaneLayout支持定义以下内容：
+        在子视图上使用布局参数layout_weight进行测量后，如何划分剩余空间（如果视图不重叠）。
+        此参数仅适用于宽度。
+
+        android:layout_weight="1"，再车辆列表窗格后，第二个窗格会展开，以填满剩余空间。
+    -->
+    <androidx.fragment.app.FragmentContainerView
+        android:id="@+id/detail_container"
+        android:layout_width="300dp"
+        android:layout_weight="1"
+        android:layout_height="match_parent"
+        android:name="com.example.android.sports.NewsDetailsFragment" />
+</androidx.slidingpanelayout.widget.SlidingPaneLayout>
